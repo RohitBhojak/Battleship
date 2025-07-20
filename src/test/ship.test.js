@@ -2,11 +2,7 @@ import Ship from "../modules/ship.js";
 
 test("ship is initialized", () => {
   const shipObj = new Ship(3);
-  expect(shipObj).toBeTruthy();
-});
-
-test("ship length cannot be smaller than 1", () => {
-  expect(() => new Ship(0)).toThrow();
+  expect(shipObj.length).toBe(3);
 });
 
 test("ship is sunk", () => {

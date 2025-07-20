@@ -1,1 +1,1 @@
-class GameBoard {}
+export default class GameBoard {}

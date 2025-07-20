@@ -1,11 +1,7 @@
 export default class Ship {
-  #length;
   #hitCount;
   constructor(length) {
-    if (length <= 0) {
-      throw new Error("Length must be greater than 0");
-    }
-    this.#length = length;
+    this.length = length;
     this.#hitCount = 0;
   }
 
@@ -14,6 +10,6 @@ export default class Ship {
   }
 
   isSunk() {
-    return this.#hitCount === this.#length;
+    return this.#hitCount === this.length;
   }
 }
