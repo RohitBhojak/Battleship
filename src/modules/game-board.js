@@ -1,5 +1,6 @@
 export default class GameBoard {
   #attacked;
+  #ships = [];
   constructor() {
     this.board = [];
     this.#attacked = [];
@@ -15,7 +16,8 @@ export default class GameBoard {
   }
 
   placeShip(ship, x, y, direction) {
-    if (this.canPlace(ship.length, x, y, direction)) {
+    if (this.canPlace(ship, x, y, direction)) {
+      this.#ships.push(ship);
       if (direction === "horizontal") {
         for (let i = 0; i < ship.length; i++) {
           this.board[x][y + i] = ship;
@@ -31,18 +33,24 @@ export default class GameBoard {
     }
   }
 
-  canPlace(shipLength, x, y, direction) {
-    if (x < 0 || y < 0 || x + shipLength > 10 || y + shipLength > 10) {
+  canPlace(ship, x, y, direction) {
+    if (
+      x < 0 ||
+      y < 0 ||
+      x + ship.length > 10 ||
+      y + ship.length > 10 ||
+      this.#ships.includes(ship)
+    ) {
       return false;
     }
     if (direction === "horizontal") {
-      for (let i = 0; i < shipLength; i++) {
+      for (let i = 0; i < ship.length; i++) {
         if (this.board[x][y + i] !== null) {
           return false;
         }
       }
     } else {
-      for (let i = 0; i < shipLength; i++) {
+      for (let i = 0; i < ship.length; i++) {
         if (this.board[x + i][y] !== null) {
           return false;
         }
@@ -61,5 +69,9 @@ export default class GameBoard {
       this.#attacked[x][y] = true;
     }
     return true;
+  }
+
+  allShipsSunk() {
+    return this.#ships.every((ship) => ship.isSunk());
   }
 }
