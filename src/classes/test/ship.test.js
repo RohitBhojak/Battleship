@@ -1,4 +1,4 @@
-import Ship from "../modules/ship.js";
+import Ship from "../ship.js";
 let shipObj;
 beforeEach(() => {
   shipObj = new Ship(3);

@@ -1,5 +1,5 @@
-import GameBoard from "../modules/game-board.js";
-import Ship from "../modules/ship.js";
+import GameBoard from "../game-board.js";
+import Ship from "../ship.js";
 
 test("10x10 game board is initialized", () => {
   const gameBoard = new GameBoard();
