@@ -1,10 +1,16 @@
 export default class GameBoard {
+  #attacked;
   constructor() {
     this.board = [];
+    this.#attacked = [];
     for (let i = 0; i < 10; i++) {
-      const arr = new Array(10);
-      arr.fill(null);
-      this.board.push(arr);
+      const nullArr = new Array(10);
+      nullArr.fill(null);
+      this.board.push(nullArr);
+
+      const falseArr = new Array(10);
+      falseArr.fill(false);
+      this.#attacked.push(falseArr);
     }
   }
 
@@ -41,6 +47,18 @@ export default class GameBoard {
           return false;
         }
       }
+    }
+    return true;
+  }
+
+  receiveAttack(x, y) {
+    if (this.#attacked[x][y]) {
+      return false;
+    } else if (this.board[x][y] !== null) {
+      this.board[x][y].hit();
+      this.#attacked[x][y] = true;
+    } else {
+      this.#attacked[x][y] = true;
     }
     return true;
   }

@@ -46,3 +46,23 @@ describe("placeShip", () => {
     expect(gameBoard.placeShip(shipObj, 9, 2, "vertical")).toBe(false);
   });
 });
+
+describe("receiveAttack", () => {
+  test("attack successful", () => {
+    expect(gameBoard.receiveAttack(0, 0)).toBe(true);
+    expect(gameBoard.receiveAttack(0, 1)).toBe(true);
+    expect(gameBoard.receiveAttack(0, 2)).toBe(true);
+  });
+
+  test("attack on already attacked coordinate", () => {
+    expect(gameBoard.receiveAttack(0, 0)).toBe(false);
+    expect(gameBoard.receiveAttack(0, 1)).toBe(false);
+    expect(gameBoard.receiveAttack(0, 2)).toBe(false);
+  });
+
+  test("missed attack", () => {
+    expect(gameBoard.receiveAttack(1, 0)).toBe(true);
+    expect(gameBoard.receiveAttack(0, 6)).toBe(true);
+    expect(gameBoard.receiveAttack(5, 5)).toBe(true);
+  });
+});
