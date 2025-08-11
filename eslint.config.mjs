@@ -21,5 +21,13 @@ export default defineConfig([
       ecmaVersion: 2022,
     },
   },
+  {
+    files: ["**/*.test.js"], // Target your test files
+    languageOptions: {
+      globals: {
+        ...globals.jest, // Add all Jest globals
+      },
+    },
+  },
   eslintConfigPrettier,
 ]);
