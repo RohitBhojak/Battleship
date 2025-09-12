@@ -67,16 +67,16 @@ describe("receiveAttack", () => {
   });
 
   test("correctly registers a successful hit on a ship", () => {
-    expect(gameBoard.receiveAttack(0, 1)).toBe(true);
+    expect(gameBoard.receiveAttack(0, 1)).toBe(1);
   });
 
   test("correctly registers a missed attack", () => {
-    expect(gameBoard.receiveAttack(5, 5)).toBe(true);
+    expect(gameBoard.receiveAttack(5, 5)).toBe(0);
   });
 
   test("prevents attacking the same coordinate more than once", () => {
     gameBoard.receiveAttack(0, 0); // First attack
-    expect(gameBoard.receiveAttack(0, 0)).toBe(false); // Second attack fails
+    expect(gameBoard.receiveAttack(0, 0)).toBe(-1); // Second attack fails
   });
 });
 

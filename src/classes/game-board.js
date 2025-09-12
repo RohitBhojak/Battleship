@@ -8,10 +8,10 @@ export default class GameBoard {
   }
 
   // Private helper method to create a 10x10 grid
-  #createGrid(fillValue) {
+  #createGrid(fillValue, n = 10) {
     const grid = [];
-    for (let i = 0; i < 10; i++) {
-      grid.push(new Array(10).fill(fillValue));
+    for (let i = 0; i < n; i++) {
+      grid.push(new Array(n).fill(fillValue));
     }
     return grid;
   }
@@ -72,13 +72,14 @@ export default class GameBoard {
 
   receiveAttack(x, y) {
     if (this.#attacked[x][y]) {
-      return false;
+      return -1;
     }
     this.#attacked[x][y] = true;
     if (this.board[x][y] !== null) {
       this.board[x][y].hit();
+      return 1;
     }
-    return true;
+    return 0;
   }
 
   allShipsSunk() {
