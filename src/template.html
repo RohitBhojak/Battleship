@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -6,14 +6,29 @@
     <title>Battleship</title>
   </head>
   <body>
-    <div class="header">BattleShip</div>
-    <div class="container">
-      <div class="instruction">Put your ships on the board</div>
-      <input type="text" placeholder="Enter Name" />
-      <div class="board"></div>
-      <div class="ships"></div>
-      <button class="start">Play</button>
-    </div>
-    <div class="footer">github</div>
+    <header><h1>BattleShip</h1></header>
+    <main class="container">
+      <div class="menu">
+        <h2>Place your ships</h2>
+        <div class="board"></div>
+        <div class="buttons">
+          <button class="play" disabled>Play</button>
+          <button class="randomize">Randomize</button>
+        </div>
+      </div>
+      <div class="game">
+        <div class="left">
+          <div class="name"></div>
+          <div class="board"></div>
+        </div>
+        <div class="right">
+          <div class="name"></div>
+          <div class="board"></div>
+        </div>
+      </div>
+    </main>
+    <footer>
+      <a href="https://github.com/RohitBhojak/Battleship">Github</a>
+    </footer>
   </body>
 </html>
