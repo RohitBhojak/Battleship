@@ -72,14 +72,14 @@ export default class GameBoard {
 
   receiveAttack(x, y) {
     if (this.#attacked[x][y]) {
-      return -1;
+      return -1; // Already attacked
     }
     this.#attacked[x][y] = true;
     if (this.board[x][y] !== null) {
       this.board[x][y].hit();
-      return 1;
+      return 1; // Hit
     }
-    return 0;
+    return 0; // Miss
   }
 
   allShipsSunk() {

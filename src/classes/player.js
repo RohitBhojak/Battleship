@@ -6,18 +6,15 @@ export class Player {
 
   // Randomly place ships on the board
   randomizeBoard(ships) {
-    for (let i = 0; i < ships.length; i++) {
-      const ship = ships[i];
-      let x = Math.floor(Math.random() * 10);
-      let y = Math.floor(Math.random() * 10);
-      let direction = Math.random() < 0.5 ? "horizontal" : "vertical";
-      while (!this.gameBoard.canPlace(ship, x, y, direction)) {
+    let x, y, direction;
+    ships.forEach((ship) => {
+      do {
         x = Math.floor(Math.random() * 10);
         y = Math.floor(Math.random() * 10);
         direction = Math.random() < 0.5 ? "horizontal" : "vertical";
-      }
+      } while (!this.gameBoard.canPlace(ship, x, y, direction));
       this.gameBoard.placeShip(ship, x, y, direction);
-    }
+    });
   }
 }
 
@@ -33,17 +30,20 @@ export class Computer extends Player {
   }
 
   attack(player, lastX = null, lastY = null) {
-    if (lastX !== null && lastY !== null) {
-      for (let i = 0; i < 4; i++) {
-        const direction = Computer.DIRECTIONS[i];
-        const x = lastX + direction[0];
-        const y = lastY + direction[1];
-        const result = player.gameBoard.receiveAttack(x, y);
-        if (result) {
-          return [x, y];
-        }
+    let result = 1;
+    let x, y;
+    while (result == -1) {
+      if (lastX != null && lastY != null) {
+        const direction = Computer.DIRECTIONS[Math.floor(Math.random() * 4)];
+        x = lastX + direction[0];
+        y = lastY + direction[1];
+      } else {
+        x = Math.floor(Math.random() * 10);
+        y = Math.floor(Math.random() * 10);
       }
-      return null;
+
+      result = player.gameBoard.receiveAttack(x, y);
     }
+    return result ? [x, y] : [lastX, lastY];
   }
 }
