@@ -82,6 +82,10 @@ export default class GameBoard {
     return 0; // Miss
   }
 
+  isAttacked(x, y) {
+    return this.#attacked[x][y];
+  }
+
   allShipsSunk() {
     return this.#ships.every((ship) => ship.isSunk());
   }
