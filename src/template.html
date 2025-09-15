@@ -8,15 +8,21 @@
   <body>
     <header><h1>BattleShip</h1></header>
     <main class="container">
-      <div class="menu">
+      <div class="info">
         <h2>Place your ships</h2>
+        <p>
+          Drag and drop the ships on the grid to place them, or use randomize to
+          place them randomly
+        </p>
+      </div>
+      <div class="menu">
         <div class="board"></div>
         <div class="buttons">
           <button class="play" disabled>Play</button>
           <button class="randomize">Randomize</button>
         </div>
       </div>
-      <div class="game">
+      <div class="game hidden">
         <div class="left">
           <div class="name"></div>
           <div class="board"></div>
@@ -25,6 +31,7 @@
           <div class="name"></div>
           <div class="board"></div>
         </div>
+        <button class="new-game">New Game</button>
       </div>
     </main>
     <footer>
