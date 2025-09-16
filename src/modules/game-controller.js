@@ -23,6 +23,9 @@ const playerNameDisplay = document.querySelector(".game .left .name");
 const computerBoardDisplay = document.querySelector(".game .right .board");
 const computerNameDisplay = document.querySelector(".game .right .name");
 
+const newGameBtn = document.querySelector(".new-game");
+let delay = 1200;
+
 // Game variables
 const SHIP_FLEET = [
   { name: "Carrier", length: 5 },
@@ -50,12 +53,9 @@ export default function initializeGame() {
     `Click to place your ${SHIP_FLEET[placementIndex].name} (${SHIP_FLEET[placementIndex].length} spaces)`,
   );
 
-  // Initialize CPU
-  computer = new Player("CPU", new GameBoard());
-  computer.randomizeBoard(SHIP_FLEET.map((ship) => new Ship(ship.length)));
-
-  // Initialize playerBoard
+  // Initialize player
   playerBoard = new GameBoard();
+  player = new Player("Player", playerBoard); //initialize early to enable randomize button
 
   // Render placement board
   renderBoard(placementBoardDisplay, playerBoard);
@@ -64,7 +64,7 @@ export default function initializeGame() {
 }
 
 function updateInfo(title, text) {
-  infoTitle.textContent = title;
+  if (title) infoTitle.textContent = title;
   infoText.textContent = text;
 }
 
@@ -91,10 +91,11 @@ function handlePlacementMouseOver(e) {
   // Early return when no ships are left to place or cell is invalid
   if (placementIndex >= SHIP_FLEET.length || !e.target.dataset.x) return;
 
-  const x = e.target.dataset.x;
-  const y = e.target.dataset.y;
+  const x = parseInt(e.target.dataset.x);
+  const y = parseInt(e.target.dataset.y);
   const shipLength = SHIP_FLEET[placementIndex].length;
-  const canPlace = playerBoard.canPlace(x, y, placementDirection);
+  const ship = new Ship(shipLength);
+  const canPlace = playerBoard.canPlace(ship, x, y, placementDirection);
 
   previewShipPlacement(x, y, shipLength, canPlace);
 }
@@ -107,8 +108,8 @@ function handlePlacementClick(e) {
   // Early return when no ships are left to place or cell is invalid
   if (placementIndex >= SHIP_FLEET.length || !e.target.dataset.x) return;
 
-  const x = e.target.dataset.x;
-  const y = e.target.dataset.y;
+  const x = parseInt(e.target.dataset.x);
+  const y = parseInt(e.target.dataset.y);
   const shipLength = SHIP_FLEET[placementIndex].length;
   const ship = new Ship(shipLength);
 
@@ -159,8 +160,8 @@ function startGame() {
   menuScreen.classList.add("hidden");
   gameScreen.classList.remove("hidden");
 
-  // Initialize player
-  player = new Player(playerNameInput.value, playerBoard);
+  // Set player name
+  player.name = playerNameInput.value || "Player";
 
   // Initialize computer
   computer = new Computer("CPU", new GameBoard());
@@ -171,7 +172,89 @@ function startGame() {
   renderBoard(playerBoardDisplay, player.gameBoard);
 
   computerNameDisplay.textContent = computer.name;
-  renderBoard(computerBoardDisplay, computer.gameBoard);
+  renderBoard(computerBoardDisplay, computer.gameBoard, true);
+
+  // Start game with player's turn
+  playerTurn();
 }
 
+function handlePlayerAttack(e) {
+  if (!e.target.dataset.x) return;
+
+  const x = parseInt(e.target.dataset.x);
+  const y = parseInt(e.target.dataset.y);
+
+  const { result } = player.attack(computer, x, y);
+  // Player keeps turn if attack is invalid or successful hit
+  switch (result) {
+    case -1:
+      updateInfo("", "You already attacked this cell");
+      break;
+    case 0:
+      updateInfo("", "You missed");
+      updateInfo(
+        `${computer.name}'s turn`,
+        `The ${computer.name} is attacking`,
+      );
+      setTimeout(computerTurn, delay);
+      break;
+    case 1:
+      updateInfo("", "You hit a ship! Attack again");
+      break;
+  }
+  renderBoard(computerBoardDisplay, computer.gameBoard, true);
+
+  if (computer.gameBoard.allShipsSunk()) {
+    endGame(true);
+  }
+}
+
+function playerTurn() {
+  updateInfo("Your turn", "Click on a cell to attack");
+  computerBoardDisplay.addEventListener("click", handlePlayerAttack);
+}
+
+function computerTurn() {
+  computerBoardDisplay.removeEventListener("click", handlePlayerAttack);
+  const { result } = computer.attack(player);
+  switch (result) {
+    case 0:
+      updateInfo("", `The ${computer.name} missed`);
+      playerTurn();
+      break;
+    case 1:
+      updateInfo("", `The ${computer.name} hit a ship! Attack again`);
+      setTimeout(computerTurn, delay);
+      break;
+  }
+  renderBoard(playerBoardDisplay, player.gameBoard);
+
+  if (player.gameBoard.allShipsSunk()) {
+    endGame(false);
+  }
+}
+
+function endGame(playerWon) {
+  computerBoardDisplay.removeEventListener("click", handlePlayerAttack);
+  updateInfo(
+    playerWon ? `Congrats ${player.name}! You won!` : "You lost!",
+    "Click New Game to play again",
+  );
+}
+
+// Event listeners
 playBtn.addEventListener("click", startGame);
+
+newGameBtn.addEventListener("click", initializeGame);
+
+rotateBtn.addEventListener("click", () => {
+  placementDirection =
+    placementDirection === "horizontal" ? "vertical" : "horizontal";
+});
+
+resetBtn.addEventListener("click", initializeGame);
+
+randomizeBtn.addEventListener("click", () => {
+  playerBoard.randomizeBoard(SHIP_FLEET.map((ship) => new Ship(ship.length)));
+  renderBoard(placementBoardDisplay, playerBoard);
+});

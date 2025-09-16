@@ -16,6 +16,11 @@ export class Player {
       this.gameBoard.placeShip(ship, x, y, direction);
     });
   }
+
+  attack(computer, x, y) {
+    const result = computer.gameBoard.receiveAttack(x, y);
+    return { x, y, result };
+  }
 }
 
 export class Computer extends Player {
