@@ -1,5 +1,5 @@
 import GameBoard from "../classes/game-board";
-import Player from "../classes/player";
+import { Player, Computer } from "../classes/player";
 import Ship from "../classes/ship";
 import renderBoard from "./renderBoard";
 
@@ -68,6 +68,7 @@ function updateInfo(title, text) {
   infoText.textContent = text;
 }
 
+// Placement phase
 function setupPlacementListeners() {
   placementBoardDisplay.addEventListener("mouseover", handlePlacementMouseOver);
   placementBoardDisplay.addEventListener("mouseout", handlePlacementMouseOut);
@@ -150,3 +151,27 @@ function clearPlacementPreview() {
     cell.classList.remove("can-place", "cannot-place");
   });
 }
+
+// Game phase
+
+function startGame() {
+  // Hide menu and show game screen
+  menuScreen.classList.add("hidden");
+  gameScreen.classList.remove("hidden");
+
+  // Initialize player
+  player = new Player(playerNameInput.value, playerBoard);
+
+  // Initialize computer
+  computer = new Computer("CPU", new GameBoard());
+  computer.randomizeBoard(SHIP_FLEET.map((ship) => new Ship(ship.length)));
+
+  // Render player names and boards
+  playerNameDisplay.textContent = player.name;
+  renderBoard(playerBoardDisplay, player.gameBoard);
+
+  computerNameDisplay.textContent = computer.name;
+  renderBoard(computerBoardDisplay, computer.gameBoard);
+}
+
+playBtn.addEventListener("click", startGame);
