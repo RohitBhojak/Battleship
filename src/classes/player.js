@@ -6,9 +6,9 @@ export class Player {
 
   // Randomly place ships on the board
   randomizeBoard(ships) {
-    this.gameBoard.clearBoard();
-    let x, y, direction;
+    this.gameBoard.clearBoard(); // Clear the board
     ships.forEach((ship) => {
+      let x, y, direction;
       do {
         x = Math.floor(Math.random() * 10);
         y = Math.floor(Math.random() * 10);
@@ -18,29 +18,50 @@ export class Player {
     });
   }
 
-  attack(computer, x, y) {
-    const result = computer.gameBoard.receiveAttack(x, y);
+  attack(enemy, x, y) {
+    const result = enemy.gameBoard.receiveAttack(x, y);
     return { x, y, result };
   }
 }
 
 export class Computer extends Player {
   #mode; // hunt - random attack on board, target - attack based on last hit
-  #firstHit; // First hit coordinates
-  #attackDirection;
+  #huntTargets; // Contains targets in checkered pattern to improve efficiency
+  #hitQueue; // Queue ship coordinates that are hit but not sunk
   #targetQueue; // Queue of coordinates to attack
   #targetVector;
   constructor(name, gameBoard) {
     super(name, gameBoard);
+    this.#initializeHuntTargets();
     this.#resetAIState();
   }
 
   #resetAIState() {
     this.#mode = "hunt";
     this.#targetQueue = [];
-    this.#firstHit = null;
-    this.#attackDirection = null;
+    this.#hitQueue = [];
     this.#targetVector = null;
+  }
+
+  #initializeHuntTargets() {
+    this.#huntTargets = [];
+    for (let x = 0; x < 10; x++) {
+      for (let y = 0; y < 10; y++) {
+        if ((x + y) % 2 === 0) {
+          this.#huntTargets.push({ x, y });
+        }
+      }
+    }
+
+    // Shuffle the array to randomize hunt attacks
+    this.#shuffleArray(this.#huntTargets);
+  }
+
+  #shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
   }
 
   attack(player) {
@@ -50,81 +71,102 @@ export class Computer extends Player {
     } else {
       ({ x, y, result } = this.#targetAttack(player.gameBoard));
     }
-    // If ship is sunk, reset AI state
+    // If ship is sunk, remove it from hitQueue
     const attackedShip = player.gameBoard.board[x][y];
     if (attackedShip && attackedShip.isSunk()) {
-      this.#resetAIState();
+      this.#hitQueue = this.#hitQueue.filter(
+        (hit) => player.gameBoard.board[hit.x][hit.y] !== attackedShip,
+      );
+
+      // if hitQueue is empty, switch to hunt mode
+      if (this.#hitQueue.length === 0) {
+        this.#resetAIState();
+      } else {
+        // rebuild target queue
+        this.#targetVector = null;
+        this.#rebuildTargetQueue(player.gameBoard);
+      }
     }
     return { x, y, result };
   }
 
   #huntAttack(board) {
-    let x, y, result;
-    // Random attack
-    do {
-      x = Math.floor(Math.random() * 10);
-      y = Math.floor(Math.random() * 10);
-      result = board.receiveAttack(x, y);
-    } while (result === -1);
+    const { x, y } = this.#huntTargets.pop();
+    const result = board.receiveAttack(x, y);
+
+    // If cell is already attacked, attack again
+    if (result === -1) {
+      return this.#huntAttack(board);
+    }
 
     // If hit, switch to target mode
     if (result === 1) {
       this.#mode = "target";
-      this.#firstHit = { x, y };
+      this.#hitQueue.push({ x, y });
       this.#addPotentialTargets(x, y, board);
     }
     return { x, y, result };
   }
 
   #targetAttack(board) {
-    // if queue is empty, switch to hunt mode
+    // If queue is empty, rebuild target queue
     if (this.#targetQueue.length === 0) {
-      this.#resetAIState();
-      return this.#huntAttack(board);
+      this.#rebuildTargetQueue(board);
+      // If queue is still empty, switch to hunt mode
+      if (this.#targetQueue.length === 0) {
+        this.#resetAIState();
+        return this.#huntAttack(board);
+      }
     }
-    let x, y, result;
-    [x, y] = this.#targetQueue.shift();
-    result = board.receiveAttack(x, y);
+    const [x, y] = this.#targetQueue.shift();
+    const result = board.receiveAttack(x, y);
     // if hit, determine direction and build queue accordingly
     if (result === 1) {
-      if (!this.#attackDirection) {
-        // if direction is not yet known, this is second hit
-        this.#establishDirectionAndBuildQueue(x, y, board);
+      this.#hitQueue.push({ x, y });
+      if (!this.#targetVector) {
+        // if direction is not yet known, establish direction and build targetQueue
+        this.#establishDirectionAndBuildQueue({ x, y }, board);
       }
-    } else if (result === 0 && this.#attackDirection) {
-      // attack missed but direction is known
-      this.#targetQueue = [];
+    } else if (result === 0 && this.#targetVector) {
+      // if miss, reverse direction
+      const firstHitOfLine = this.#hitQueue[this.#hitQueue.length - 2];
+      this.#targetQueue = []; // clear queue
       const reverseDx = -this.#targetVector.dx;
       const reverseDy = -this.#targetVector.dy;
-      // add targets in reverse direction of the first hit
-      this.#addTargetsInLine(
-        this.#firstHit.x,
-        this.#firstHit.y,
-        reverseDx,
-        reverseDy,
-        board,
-      );
+      this.#addTargetsInLine(firstHitOfLine, reverseDx, reverseDy, board);
+      this.#targetVector = null;
     }
     return { x, y, result };
   }
 
-  #establishDirectionAndBuildQueue(x, y, board) {
-    const dx = x - this.#firstHit.x;
-    const dy = y - this.#firstHit.y;
-    this.#attackDirection = dx === 0 ? "horizontal" : "vertical";
-    this.#targetVector = { dx, dy };
-    this.#targetQueue = [];
-
-    this.#addTargetsInLine(x, y, dx, dy, board);
+  #establishDirectionAndBuildQueue(currentHit, board) {
+    for (const prevHit of this.#hitQueue) {
+      // If hit is in the same row or column, establish direction
+      if (prevHit.x === currentHit.x || prevHit.y === currentHit.y) {
+        const dx = Math.sign(currentHit.x - prevHit.x);
+        const dy = Math.sign(currentHit.y - prevHit.y);
+        this.#targetVector = { dx, dy };
+        this.#targetQueue = [];
+        this.#addTargetsInLine(currentHit, dx, dy, board);
+        return; // Exit when direction is found
+      }
+    }
   }
 
-  #addTargetsInLine(x, y, dx, dy, board) {
-    let nx = x + dx;
-    let ny = y + dy;
+  #addTargetsInLine(startHit, dx, dy, board) {
+    let nx = startHit.x + dx;
+    let ny = startHit.y + dy;
     while (this.#isValidCoordinate(nx, ny, board)) {
       this.#targetQueue.push([nx, ny]);
       nx += dx;
       ny += dy;
+    }
+  }
+
+  #rebuildTargetQueue(board) {
+    this.#targetQueue = [];
+    for (const hit of this.#hitQueue) {
+      this.#addPotentialTargets(hit.x, hit.y, board);
     }
   }
 
