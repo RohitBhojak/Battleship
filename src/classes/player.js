@@ -177,6 +177,7 @@ export class Computer extends Player {
       [0, 1],
       [0, -1],
     ];
+    this.#shuffleArray(directions);
     directions.forEach(([dx, dy]) => {
       let nx = x + dx;
       let ny = y + dy;
