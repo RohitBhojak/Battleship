@@ -1,0 +1,222 @@
+/* --- Global Styles & Typography --- */
+:root {
+  --board-size: min(400px, 90vw);
+  --cell-size: calc(var(--board-size) / 10);
+  --primary-bg: #f0f4f8;
+  --secondary-bg: #ffffff;
+  --border-color: #d1d5db;
+  --text-color: #1f2937;
+  --accent-color: #3b82f6;
+  --accent-hover: #2563eb;
+  --hit-color: #ef4444;
+  --miss-color: #60a5fa;
+  --ship-color: #6b7280;
+  --sunk-color: #991b1b;
+  --valid-place: rgba(74, 222, 128, 0.7);
+  --invalid-place: rgba(248, 113, 113, 0.7);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+    Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background-color: var(--primary-bg);
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  align-items: center;
+}
+
+header,
+footer {
+  width: 100%;
+  text-align: center;
+  padding: 1rem;
+  background-color: var(--secondary-bg);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+footer a {
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+main.container {
+  flex-grow: 1;
+  width: 100%;
+  max-width: 1000px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* --- Info Display --- */
+.info {
+  text-align: center;
+  max-width: 600px;
+}
+
+.info h2 {
+  margin-bottom: 0.5rem;
+  font-size: 1.75rem;
+}
+
+.info p {
+  color: #4b5563;
+}
+
+/* --- Menu Screen --- */
+.menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.menu input[type="text"] {
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1rem;
+  width: 100%;
+  max-width: 300px;
+  text-align: center;
+}
+
+.menu .buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+/* --- Game Screen --- */
+.game {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  width: 100%;
+}
+
+.game .left,
+.game .right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.game .name {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.new-game {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+/* --- Game Boards & Cells --- */
+.board {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(10, 1fr);
+  width: var(--board-size);
+  height: var(--board-size);
+  background-color: var(--secondary-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.cell {
+  width: var(--cell-size);
+  height: var(--cell-size);
+  border: 1px solid #e5e7eb;
+}
+
+/* Cell States */
+.cell.ship {
+  background-color: var(--ship-color);
+}
+.cell.miss {
+  background-color: var(--miss-color);
+}
+.cell.hit {
+  background-color: var(--hit-color);
+}
+.cell.sunk {
+  background-color: var(--sunk-color);
+}
+.cell.can-place {
+  background-color: var(--valid-place);
+}
+.cell.cannot-place {
+  background-color: var(--invalid-place);
+}
+
+/* Hover effect on enemy board */
+.game .right .board:hover .cell:not(.miss):not(.hit) {
+  cursor: crosshair;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* --- Buttons --- */
+button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--accent-color);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+}
+
+button:hover {
+  background-color: var(--accent-hover);
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+button:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+button.randomize,
+button.reset,
+.new-game {
+  background-color: #4b5563;
+}
+button.randomize:hover,
+button.reset:hover,
+.new-game:hover {
+  background-color: #1f2937;
+}
+
+/* --- Utility --- */
+.hidden {
+  display: none !important;
+}
+
+.game .right .board.disabled:hover .cell:not(.miss):not(.hit) {
+  cursor: not-allowed;
+}

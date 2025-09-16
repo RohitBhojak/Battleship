@@ -39,6 +39,7 @@ let player, computer, playerBoard;
 let placementIndex = 0;
 let placementDirection = "horizontal";
 
+// Functions
 export default function initializeGame() {
   // Show menu and hide game screen
   menuScreen.classList.remove("hidden");
@@ -140,8 +141,8 @@ function previewShipPlacement(x, y, shipLength, canPlace) {
   // clear previous preview
   clearPlacementPreview();
   for (let i = 0; i < shipLength; i++) {
-    const currX = x + (placementDirection === "horizontal" ? i : 0);
-    const currY = y + (placementDirection === "vertical" ? i : 0);
+    const currX = x + (placementDirection === "vertical" ? i : 0);
+    const currY = y + (placementDirection === "horizontal" ? i : 0);
     const cell = document.querySelector(
       `.menu .board .cell[data-x="${currX}"][data-y="${currY}"]`,
     );

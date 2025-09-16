@@ -1,3 +1,4 @@
-import initializeGame from "./modules/game-controller";
+import initializeGame from "./DOM/game-controller";
+import "./css/styles.css";
 
 initializeGame();
