@@ -24,7 +24,7 @@ const computerBoardDisplay = document.querySelector(".game .right .board");
 const computerNameDisplay = document.querySelector(".game .right .name");
 
 const newGameBtn = document.querySelector(".new-game");
-let delay = 1200;
+let delay = 1000;
 
 // Game variables
 const SHIP_FLEET = [
@@ -38,6 +38,7 @@ const SHIP_FLEET = [
 let player, computer, playerBoard;
 let placementIndex = 0;
 let placementDirection = "horizontal";
+let isGameOver;
 
 // Functions
 export default function initializeGame() {
@@ -45,6 +46,7 @@ export default function initializeGame() {
   menuScreen.classList.remove("hidden");
   gameScreen.classList.add("hidden");
 
+  isGameOver = false;
   disablePlayButton();
 
   // Initialize player
@@ -185,7 +187,7 @@ function startGame() {
 }
 
 function handlePlayerAttack(e) {
-  if (!e.target.dataset.x) return;
+  if (isGameOver || !e.target.dataset.x) return;
 
   const x = parseInt(e.target.dataset.x);
   const y = parseInt(e.target.dataset.y);
@@ -224,6 +226,7 @@ function playerTurn() {
 }
 
 function computerTurn() {
+  if (isGameOver) return;
   const { result } = computer.attack(player);
   switch (result) {
     case 0:
@@ -243,6 +246,7 @@ function computerTurn() {
 }
 
 function endGame(playerWon) {
+  isGameOver = true;
   computerBoardDisplay.removeEventListener("click", handlePlayerAttack);
   updateInfo(
     playerWon ? `Congrats ${player.name}! You won!` : "You lost!",

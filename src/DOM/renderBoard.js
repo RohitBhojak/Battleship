@@ -10,9 +10,11 @@ export default function renderBoard(boardDisplay, gameBoard, isEnemy = false) {
       if (!isEnemy && gameBoard.board[i][j]) {
         cell.classList.add("ship");
       }
-      // highlight hit cell
-      if (gameBoard.isAttacked(i, j)) {
+      // highlight hit and miss cells
+      if (gameBoard.board[i][j] && gameBoard.isAttacked(i, j)) {
         cell.classList.add("hit");
+      } else if (gameBoard.isAttacked(i, j)) {
+        cell.classList.add("miss");
       }
       // highlight sunk ship
       if (gameBoard.board[i][j] && gameBoard.board[i][j].isSunk()) {
