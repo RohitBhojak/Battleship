@@ -89,4 +89,10 @@ export default class GameBoard {
   allShipsSunk() {
     return this.#ships.every((ship) => ship.isSunk());
   }
+
+  clearBoard() {
+    this.#ships = [];
+    this.board = this.#createGrid(null);
+    this.#attacked = this.#createGrid(false);
+  }
 }

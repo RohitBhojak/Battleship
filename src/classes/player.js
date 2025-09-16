@@ -6,6 +6,7 @@ export class Player {
 
   // Randomly place ships on the board
   randomizeBoard(ships) {
+    this.gameBoard.clearBoard();
     let x, y, direction;
     ships.forEach((ship) => {
       do {
