@@ -24,7 +24,7 @@ const computerBoardDisplay = document.querySelector(".game .right .board");
 const computerNameDisplay = document.querySelector(".game .right .name");
 
 const newGameBtn = document.querySelector(".new-game");
-let delay = 500;
+let delay = 1000;
 
 // Game variables
 const SHIP_FLEET = [
@@ -200,10 +200,7 @@ function handlePlayerAttack(e) {
       break;
     case 0:
       updateInfo("", "You missed");
-      updateInfo(
-        `${computer.name}'s turn`,
-        `The ${computer.name} is attacking`,
-      );
+
       computerBoardDisplay.removeEventListener("click", handlePlayerAttack);
       computerBoardDisplay.classList.add("disabled");
       setTimeout(computerTurn, delay);
@@ -227,6 +224,7 @@ function playerTurn() {
 
 function computerTurn() {
   if (isGameOver) return;
+  updateInfo(`${computer.name}'s turn`, `The ${computer.name} is attacking`);
   const { result } = computer.attack(player);
   switch (result) {
     case 0:
