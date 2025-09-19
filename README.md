@@ -1,6 +1,8 @@
-# Battleship: A Classic Naval Combat Game
+# [Battleship: A Classic Naval Combat Game](https://rohitbhojak.github.io/Battleship/)
 
 A modern, web-based implementation of the classic Battleship board game, built with vanilla JavaScript, HTML, and CSS. This project focuses on clean code architecture, a robust game controller, and a challenging AI opponent that provides a compelling single-player experience.
+
+[Play Battleship](https://rohitbhojak.github.io/Battleship/)
 
 ## Features
 
