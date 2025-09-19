@@ -26,6 +26,8 @@ const computerNameDisplay = document.querySelector(".game .right .name");
 const newGameBtn = document.querySelector(".new-game");
 let delay = 1000;
 
+let timeoutId = null;
+
 // Game variables
 const SHIP_FLEET = [
   { name: "Carrier", length: 5 },
@@ -43,6 +45,7 @@ let isGameOver;
 // Functions
 export default function initializeGame() {
   // Show menu and hide game screen
+  clearTimeout(timeoutId);
   menuScreen.classList.remove("hidden");
   gameScreen.classList.add("hidden");
 
@@ -203,7 +206,7 @@ function handlePlayerAttack(e) {
 
       computerBoardDisplay.removeEventListener("click", handlePlayerAttack);
       computerBoardDisplay.classList.add("disabled");
-      setTimeout(computerTurn, delay);
+      timeoutId = setTimeout(computerTurn, delay);
       break;
     case 1:
       updateInfo("", "You hit a ship! Attack again");
@@ -229,11 +232,11 @@ function computerTurn() {
   switch (result) {
     case 0:
       updateInfo("", `The ${computer.name} missed`);
-      setTimeout(playerTurn, delay);
+      timeoutId = setTimeout(playerTurn, delay);
       break;
     case 1:
       updateInfo("", `The ${computer.name} hit a ship! Attack again`);
-      setTimeout(computerTurn, delay);
+      timeoutId = setTimeout(computerTurn, delay);
       break;
   }
   renderBoard(playerBoardDisplay, player.gameBoard);
