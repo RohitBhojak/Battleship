@@ -29,7 +29,7 @@ export class Computer extends Player {
   #huntTargets; // Contains targets in checkered pattern to improve efficiency
   #hitQueue; // Queue ship coordinates that are hit but not sunk
   #targetQueue; // Queue of coordinates to attack
-  #targetVector;
+  #targetVector; // Direction vector
   constructor(name, gameBoard) {
     super(name, gameBoard);
     this.#initializeHuntTargets();
@@ -140,16 +140,23 @@ export class Computer extends Player {
   }
 
   #establishDirectionAndBuildQueue(currentHit, board) {
-    for (const prevHit of this.#hitQueue) {
-      // If hit is in the same row or column, establish direction
-      if (prevHit.x === currentHit.x || prevHit.y === currentHit.y) {
-        const dx = Math.sign(currentHit.x - prevHit.x);
-        const dy = Math.sign(currentHit.y - prevHit.y);
-        this.#targetVector = { dx, dy };
-        this.#targetQueue = [];
-        this.#addTargetsInLine(currentHit, dx, dy, board);
-        return; // Exit when direction is found
-      }
+    // We need at least two hits to establish a direction.
+    if (this.#hitQueue.length < 2) return;
+
+    // compare the current hit to the one immediately preceding it.
+    const prevHit = this.#hitQueue[this.#hitQueue.length - 2];
+
+    const dx = Math.sign(currentHit.x - prevHit.x);
+    const dy = Math.sign(currentHit.y - prevHit.y);
+
+    // Check if they form a straight, non-diagonal line
+    if ((dx !== 0 && dy === 0) || (dx === 0 && dy !== 0)) {
+      this.#targetVector = { dx, dy };
+      this.#targetQueue = []; // Clear old, uncertain guesses
+
+      // Add targets in both directions from the newly found line
+      this.#addTargetsInLine(currentHit, dx, dy, board);
+      this.#addTargetsInLine(prevHit, -dx, -dy, board); // Look backwards from the other hit
     }
   }
 
