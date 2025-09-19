@@ -8,6 +8,7 @@
     "eslint": "^9.31.0",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^16.3.0",
+    "html-loader": "^5.1.0",
     "html-webpack-plugin": "^5.6.3",
     "jest": "^30.0.4",
     "prettier": "3.6.2",

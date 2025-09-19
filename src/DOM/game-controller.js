@@ -24,7 +24,7 @@ const computerBoardDisplay = document.querySelector(".game .right .board");
 const computerNameDisplay = document.querySelector(".game .right .name");
 
 const newGameBtn = document.querySelector(".new-game");
-let delay = 1000;
+let delay = 500;
 
 // Game variables
 const SHIP_FLEET = [
