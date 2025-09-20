@@ -1,6 +1,6 @@
 /* General Setup */
 :root {
-  --board-size: min(90vw, 500px);
+  --board-size: min(85vw, 500px);
   --cell-size: calc(var(--board-size) / 10);
   --primary-bg: #1a2a33;
   --secondary-bg: #1f3641;
@@ -269,5 +269,11 @@ button {
     &.sunk::after {
       background: url(../assets/explosion.gif) no-repeat center center/cover;
     }
+  }
+}
+
+@media (max-width: 600px) {
+  .game {
+    padding: 20px 0px;
   }
 }
